@@ -1,5 +1,5 @@
 {
-  "name": "eureka/component-template",
+  "name": "eureka/component-serializer",
   "description": "Template for new component & domain",
   "type": "library",
   "minimum-stability": "stable",
@@ -14,12 +14,12 @@
 
   "autoload": {
     "psr-4": {
-      "Eureka\\Component\\Template\\": "./src"
+      "Eureka\\Component\\Serializer\\": "./src"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Eureka\\Component\\Template\\Tests\\": "./tests"
+      "Eureka\\Component\\Serializer\\Tests\\": "./tests"
     }
   },
 
@@ -31,7 +31,8 @@
   },
 
   "require": {
-    "php": "7.4.*||8.0.*||8.1.*||8.2.*"
+    "php": "7.4.*||8.0.*||8.1.*||8.2.*",
+    "ext-json": "*"
   },
 
   "require-dev": {

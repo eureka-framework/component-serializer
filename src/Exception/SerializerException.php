@@ -9,13 +9,13 @@
 
 declare(strict_types=1);
 
-namespace Eureka\Component\Template;
+namespace Eureka\Component\Serializer\Exception;
 
 /**
- * DataMapper Data abstract class.
+ * Class SerializerException
  *
  * @author Romain Cottard
  */
-class DummySrc
+class SerializerException extends \Exception
 {
 }

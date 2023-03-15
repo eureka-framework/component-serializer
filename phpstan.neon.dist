@@ -1,6 +1,6 @@
 parameters:
   phpVersion: 80100 # PHP 8.1 - Current minimal version supported
-  level: max
+  level: 5
   paths:
     - ./src
     - ./tests

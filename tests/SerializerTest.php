@@ -14,6 +14,8 @@ namespace Eureka\Component\Serializer\Tests;
 use Eureka\Component\Serializer\Exception\SerializerException;
 use Eureka\Component\Serializer\JsonSerializer;
 use Eureka\Component\Serializer\Tests\VO\CollectionEntityB;
+use Eureka\Component\Serializer\Tests\VO\EntityA;
+use Eureka\Component\Serializer\Tests\VO\EntityB;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -38,7 +40,7 @@ class SerializerTest extends TestCase
         //~ Serialize VO
         $json = $serializer->serialize($originalVO);
 
-        //~ Unserialize VO
+        //~ Unserialize
         $unserializedVO = $serializer->unserialize($json, get_class($originalVO));
 
         //~ Compare data
@@ -92,13 +94,14 @@ class SerializerTest extends TestCase
     public function testASerializerExceptionIsThrownWhenIUnserializeDataAndTryToMapToANonExistingClass(): void
     {
         $this->expectException(SerializerException::class);
+
         (new JsonSerializer())->unserialize('[]', 'Test\Hello\Not\Exists');
     }
 
     /**
      * Data provider for success tests.
      *
-     * @return array
+     * @return array<string, list<EntityA|EntityB>>
      */
     public function provideVOForSerializationAndUnserializationTests(): array
     {

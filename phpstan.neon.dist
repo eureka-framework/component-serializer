@@ -1,9 +1,17 @@
 parameters:
   phpVersion: 80100 # PHP 8.1 - Current minimal version supported
-  level: 5
+  level: 9
   paths:
     - ./src
     - ./tests
 
   bootstrapFiles:
     - ./vendor/autoload.php
+
+  ignoreErrors:
+    - path:    './tests/SerializerTest.php'
+      message: '`Parameter #2 \$class of method (.+)JsonSerializer::unserialize\(\) expects class-string, string given.`'
+    - path:    './src/JsonSerializer.php'
+      message: '`Method (.+)JsonSerializer::isHydratableArgument\(\) has parameter .+ with generic class ReflectionClass but does not specify its types: T`'
+    - path:    './src/JsonSerializer.php'
+      message: '`Dead catch - ReflectionException is never thrown in the try block.`'

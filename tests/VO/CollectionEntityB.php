@@ -18,13 +18,15 @@ use Eureka\Component\Serializer\VO\AbstractCollection;
  * Class CollectionEntityB
  *
  * @author Romain Cottard
+ *
+ * @extends AbstractCollection<EntityB>
  */
-class CollectionEntityB extends AbstractCollection implements \JsonSerializable
+class CollectionEntityB extends AbstractCollection
 {
     /**
      * CollectionEntityB constructor.
      *
-     * @param array $dataEntitiesB
+     * @phpstan-param list<array{id: int, name: string}> $dataEntitiesB
      */
     public function __construct(array $dataEntitiesB)
     {
@@ -34,12 +36,12 @@ class CollectionEntityB extends AbstractCollection implements \JsonSerializable
     }
 
     /**
-     * @param mixed $offset
-     * @param mixed $value
+     * @param int|null $offset
+     * @param EntityB $value
      * @return void
      * @throws CollectionException
      */
-    public function offsetSet($offset, $value): void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         if (!$value instanceof EntityB) {
             throw new CollectionException('Data must be an instance of ' . EntityB::class);

@@ -31,41 +31,54 @@ final class JsonSerializer
         try {
             return json_encode($object, JSON_THROW_ON_ERROR);
         } catch (\JsonException $exception) {
-            throw new SerializerException('[CLI-8200] Cannot serialize data (json_encode failed)!', 8200, $exception);
+            throw new SerializerException(
+                '[CLI-10200] Cannot serialize data (json_encode failed)!',
+                10200,
+                $exception
+            );
         }
     }
 
     /**
-     * @param string $json
-     * @param string $class
-     * @param bool $skippableParameters
-     * @return object
+     * @phpstan-param class-string $class
+     * @phpstan-return object
      * @throws SerializerException
      */
-    public function unserialize(string $json, string $class, bool $skippableParameters = false)
+    public function unserialize(string $json, string $class, bool $skippableParameters = false): object
     {
         try {
+            /** @var array<string, mixed> $data */
             $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
 
             return $this->hydrate($class, $data, $skippableParameters);
         } catch (\JsonException $exception) {
-            throw new SerializerException('[CLI-8201] Cannot unserialize data (json_decode failed)!', 8201, $exception);
+            throw new SerializerException(
+                '[CLI-10201] Cannot unserialize data (json_decode failed)!',
+                10201,
+                $exception
+            );
         }
     }
 
     /**
-     * @param string $class
-     * @param array $data
-     * @param bool $skippableParameters
-     * @return mixed
-     * @throws SerializerException|\ReflectionException
+     * @phpstan-param class-string $class
+     * @phpstan-param array<string, mixed> $data
+     * @throws SerializerException
      */
-    private function hydrate(string $class, array $data, bool $skippableParameters)
+    private function hydrate(string $class, array $data, bool $skippableParameters): object
     {
         try {
             $reflection = new \ReflectionClass($class);
         } catch (\ReflectionException $exception) {
-            throw new SerializerException("[CLI-8202] Given class does not exists! (class: '${class}')", 8203, $exception);
+            throw new SerializerException(
+                "[CLI-10202] Given class does not exists! (class: '$class')",
+                10202,
+                $exception
+            );
+        }
+
+        if ($reflection->getConstructor() === null) {
+            return new $class();
         }
 
         $parameters   = $reflection->getConstructor()->getParameters();
@@ -77,18 +90,14 @@ final class JsonSerializer
             $argumentValue = null;
 
             if ($this->hasValidNamedData($parameterName, $data)) {
-                $parameterType   = $parameter->getType();
-                $reflectionClass = $parameterType instanceof \ReflectionNamedType && !$parameterType->isBuiltin()
-                    ? new \ReflectionClass($parameterType->getName())
-                    : null;
-                $argumentValue = $data[$parameterName];
-                if ($this->isHydratableArgument($reflectionClass, $argumentValue)) {
-                    $argumentValue = $this->hydrate($reflectionClass->getName(), $argumentValue, $skippableParameters);
-                }
+                $argumentValue = $this->getArgumentValueFromType($parameter, $data, $skippableParameters);
             } elseif ($this->hasValidArrayData($parameter, $nbParameters)) {
                 $argumentValue = $data;
             } elseif (!$skippableParameters) {
-                throw new SerializerException("[CLI-8203] Cannot deserialize object: data '${parameterName}' does not exist!", 8203);
+                throw new SerializerException(
+                    "[CLI-10203] Cannot deserialize object: data '$parameterName' does not exist!",
+                    10203
+                );
             }
 
             $orderedArguments[$parameter->getPosition()] = $argumentValue;
@@ -100,20 +109,51 @@ final class JsonSerializer
     }
 
     /**
-     * @param string $parameterName
-     * @param array $data
-     * @return bool
+     * @phpstan-param array<string, mixed> $data
+     * @throws SerializerException
+     */
+    private function getArgumentValueFromType(
+        \ReflectionParameter $parameter,
+        array $data,
+        bool $skippableParameters
+    ): mixed {
+        $parameterName = $parameter->getName();
+        $parameterType = $parameter->getType();
+
+        if (!($parameterType instanceof \ReflectionNamedType) || $parameterType->isBuiltin()) {
+            return $data[$parameterName];
+        }
+
+        /** @var class-string $parameterTypeName */
+        $parameterTypeName = $parameterType->getName();
+
+        try {
+            $reflectionClass = new \ReflectionClass($parameterTypeName);
+        } catch (\ReflectionException $exception) {
+            throw new SerializerException(
+                "[CLI-10204] Given class does not exists! (class: '$parameterName')",
+                10204,
+                $exception
+            );
+        }
+
+        /** @var mixed $argumentValue */
+        $argumentValue = $data[$parameterName];
+        if ($this->isHydratableArgument($reflectionClass, $argumentValue)) {
+            $argumentValue = $this->hydrate($reflectionClass->getName(), $argumentValue, $skippableParameters);
+        }
+
+        return $argumentValue;
+    }
+
+    /**
+     * @phpstan-param array<string, mixed> $data
      */
     private function hasValidNamedData(string $parameterName, array $data): bool
     {
         return array_key_exists($parameterName, $data);
     }
 
-    /**
-     * @param \ReflectionParameter $parameter
-     * @param int $nbParameters
-     * @return bool
-     */
     private function hasValidArrayData(\ReflectionParameter $parameter, int $nbParameters): bool
     {
         $reflectionType = $parameter->getType();
@@ -122,24 +162,21 @@ final class JsonSerializer
             return false;
         }
 
-        /* @todo Uncomment when we will support only PHP 8+ */
-        /*$types = $reflectionType instanceof \ReflectionUnionType ? $reflectionType->getTypes() : [$reflectionType];*/
-        /** @var \ReflectionNamedType[] $types */
-        $types = [$reflectionType];
+        $types = $reflectionType instanceof \ReflectionUnionType ? $reflectionType->getTypes() : [$reflectionType];
 
         return in_array('array', array_map(fn(\ReflectionNamedType $t): string => $t->getName(), $types));
     }
 
     /**
-     * @param \ReflectionClass|null $parameterReflectionClass
-     * @param mixed $data
+     * @param \ReflectionClass $parameterReflectionClass
+     * @param mixed|array<string,mixed> $data
      * @return bool
+     * @phpstan-assert-if-true array<string, mixed> $data
      */
-    private function isHydratableArgument(?\ReflectionClass $parameterReflectionClass, $data): bool
+    private function isHydratableArgument(\ReflectionClass $parameterReflectionClass, mixed $data): bool
     {
         return (
-            $parameterReflectionClass !== null
-            && in_array(\JsonSerializable::class, $parameterReflectionClass->getInterfaceNames())
+            in_array(\JsonSerializable::class, $parameterReflectionClass->getInterfaceNames())
             && is_array($data)
         );
     }

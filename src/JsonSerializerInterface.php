@@ -32,5 +32,5 @@ interface JsonSerializerInterface extends \JsonSerializable
      * @return JsonSerializerInterface
      * @throws SerializerException
      */
-    public static function deserialize(string $json): JsonSerializerInterface;
+    public static function unserialize(string $json): JsonSerializerInterface;
 }

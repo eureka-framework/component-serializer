@@ -17,6 +17,10 @@ use Eureka\Component\Serializer\JsonSerializableTrait;
  * Class AbstractCollection
  *
  * @author Romain Cottard
+ *
+ * @template TValue of object
+ * @implements \ArrayAccess<int, TValue>
+ * @implements \Iterator<int, TValue>
  */
 class AbstractCollection implements \JsonSerializable, \ArrayAccess, \Iterator, \Countable
 {
@@ -24,18 +28,15 @@ class AbstractCollection implements \JsonSerializable, \ArrayAccess, \Iterator, 
         JsonSerializableTrait::jsonSerialize as parentJsonSerialize;
     }
 
-    /** @var array<object> $collection Mixed elements (mainly list of same VO) */
+    /** @phpstan-var array<int, TValue> $collection Mixed elements (mainly list of same VO) */
     private array $collection;
-
-    /** @var int $index */
     private int $index = 0;
 
-    /** @var int[] $mapIndex */
+    /** @phpstan-var list<int> $mapIndex */
     private array $mapIndex = [];
 
     /**
-     * @param object $value
-     * @return void
+     * @phpstan-param TValue $value
      */
     protected function add(object $value): void
     {
@@ -68,7 +69,7 @@ class AbstractCollection implements \JsonSerializable, \ArrayAccess, \Iterator, 
      * Return the current element
      *
      * @link https://php.net/manual/en/iterator.current.php
-     * @return object Can return any type.
+     * @return TValue Can return any type.
      */
     public function current(): object
     {
@@ -103,7 +104,7 @@ class AbstractCollection implements \JsonSerializable, \ArrayAccess, \Iterator, 
      * Checks if current position is valid
      *
      * @link https://php.net/manual/en/iterator.valid.php
-     * @return bool The return value will be casted to boolean and then evaluated.
+     * @return bool The return value will be cast to boolean and then evaluated.
      * Returns true on success or false on failure.
      */
     public function valid(): bool
@@ -112,29 +113,29 @@ class AbstractCollection implements \JsonSerializable, \ArrayAccess, \Iterator, 
     }
 
     /**
-     * @param mixed $offset
+     * @param int $offset
      * @return bool
      */
-    public function offsetExists($offset): bool
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->collection[$offset]);
     }
 
     /**
      * @param int $offset
-     * @return object
+     * @return TValue
      */
-    public function offsetGet($offset): object
+    public function offsetGet(mixed $offset): object
     {
         return $this->collection[$offset];
     }
 
     /**
-     * @param mixed $offset
-     * @param object $value
+     * @param int|null $offset
+     * @param TValue $value
      * @return void
      */
-    public function offsetSet($offset, $value): void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         if ($offset === null) {
             $this->add($value);
@@ -150,10 +151,10 @@ class AbstractCollection implements \JsonSerializable, \ArrayAccess, \Iterator, 
     }
 
     /**
-     * @param mixed $offset
+     * @param int $offset
      * @return void
      */
-    public function offsetUnset($offset): void
+    public function offsetUnset(mixed $offset): void
     {
         unset($this->collection[$offset]);
 
@@ -169,7 +170,7 @@ class AbstractCollection implements \JsonSerializable, \ArrayAccess, \Iterator, 
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function jsonSerialize(): array
     {

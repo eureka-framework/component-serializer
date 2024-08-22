@@ -51,7 +51,7 @@ class AbstractCollection implements \JsonSerializable, \ArrayAccess, \Iterator, 
      */
     public function count(): int
     {
-        return count($this->collection);
+        return \count($this->collection);
     }
 
     /**
@@ -109,7 +109,7 @@ class AbstractCollection implements \JsonSerializable, \ArrayAccess, \Iterator, 
      */
     public function valid(): bool
     {
-        return ($this->index < count($this->collection));
+        return ($this->index < \count($this->collection));
     }
 
     /**
@@ -140,7 +140,7 @@ class AbstractCollection implements \JsonSerializable, \ArrayAccess, \Iterator, 
         if ($offset === null) {
             $this->add($value);
         } else {
-            $alreadyExists             = array_key_exists($offset, $this->collection);
+            $alreadyExists             = \array_key_exists($offset, $this->collection);
             $this->collection[$offset] = $value;
 
             //~ Add mapping key if not exists
@@ -187,6 +187,6 @@ class AbstractCollection implements \JsonSerializable, \ArrayAccess, \Iterator, 
      */
     private function getNewIndex(): int
     {
-        return (!empty($this->collection)) ? array_keys($this->collection)[count($this->collection) - 1] : 0;
+        return (!empty($this->collection)) ? \array_keys($this->collection)[\count($this->collection) - 1] : 0;
     }
 }

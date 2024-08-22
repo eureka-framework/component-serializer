@@ -1,6 +1,6 @@
 parameters:
   phpVersion: 80100 # PHP 8.1 - Current minimal version supported
-  level: 9
+  level: max
   paths:
     - ./src
     - ./tests
@@ -9,7 +9,7 @@ parameters:
     - ./vendor/autoload.php
 
   ignoreErrors:
-    - path:    './tests/SerializerTest.php'
+    - path:    './tests/unit/SerializerTest.php'
       message: '`Parameter #2 \$class of method (.+)JsonSerializer::unserialize\(\) expects class-string, string given.`'
     - path:    './src/JsonSerializer.php'
       message: '`Method (.+)JsonSerializer::isHydratableArgument\(\) has parameter .+ with generic class ReflectionClass but does not specify its types: T`'

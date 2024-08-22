@@ -9,13 +9,13 @@
 
 declare(strict_types=1);
 
-namespace Eureka\Component\Serializer\Tests;
+namespace Eureka\Component\Serializer\Tests\Unit;
 
 use Eureka\Component\Serializer\Exception\SerializerException;
 use Eureka\Component\Serializer\JsonSerializer;
-use Eureka\Component\Serializer\Tests\VO\CollectionEntityB;
-use Eureka\Component\Serializer\Tests\VO\EntityA;
-use Eureka\Component\Serializer\Tests\VO\EntityB;
+use Eureka\Component\Serializer\Tests\Unit\VO\CollectionEntityB;
+use Eureka\Component\Serializer\Tests\Unit\VO\EntityA;
+use Eureka\Component\Serializer\Tests\Unit\VO\EntityB;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -57,7 +57,7 @@ class SerializerTest extends TestCase
         $data = ['id' => 1, 'name' => 'name A#1', 'other' => 'any value'];
 
         $this->expectException(SerializerException::class);
-        (new JsonSerializer())->unserialize(json_encode($data, JSON_THROW_ON_ERROR), VO\EntityA::class);
+        (new JsonSerializer())->unserialize(json_encode($data, JSON_THROW_ON_ERROR), EntityA::class);
     }
 
     /**
@@ -73,7 +73,7 @@ class SerializerTest extends TestCase
                 {
                     return "\xB1\x31";
                 }
-            }
+            },
         );
     }
 
@@ -84,7 +84,7 @@ class SerializerTest extends TestCase
     public function testASerializerExceptionIsThrownWhenIUnserializeAnInvalidJson(): void
     {
         $this->expectException(SerializerException::class);
-        (new JsonSerializer())->unserialize('[', VO\EntityA::class);
+        (new JsonSerializer())->unserialize('[', EntityA::class);
     }
 
     /**
@@ -103,7 +103,7 @@ class SerializerTest extends TestCase
      *
      * @return array<string, list<EntityA|EntityB>>
      */
-    public function provideVOForSerializationAndUnserializationTests(): array
+    public static function provideVOForSerializationAndUnserializationTests(): array
     {
         $collection = [
             ['id' => 1, 'name' => 'name B #1'],
@@ -112,9 +112,9 @@ class SerializerTest extends TestCase
         ];
 
         return [
-            'Entity A VO'                 => [new VO\EntityA(42, 'name A', null)],
-            'Entity B VO'                 => [new VO\EntityB(43, 'name B')],
-            'Entity A with Collection VO' => [new VO\EntityA(42, 'name A', new CollectionEntityB($collection))],
+            'Entity A VO'                 => [new EntityA(42, 'name A', null)],
+            'Entity B VO'                 => [new EntityB(43, 'name B')],
+            'Entity A with Collection VO' => [new EntityA(42, 'name A', new CollectionEntityB($collection))],
         ];
     }
 }

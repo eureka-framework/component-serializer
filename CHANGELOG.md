@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ```yaml
 ## [tag] - YYYY-MM-DD
-[tag]: https://github.com/eureka-framework/component-serializer/compare/2.0.0...master
+[tag]: https://github.com/eureka-framework/component-serializer/compare/2.1.0...master
 ### Changed
 - Change 1
 ### Added
@@ -16,6 +16,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ```
 
 ----
+
+## [2.1.0] - 2024-08-22
+[2.1.0]: https://github.com/eureka-framework/component-serializer/compare/2.0.0...2.1.0
+### Changed
+- Now support PHP 8.3 & PHP 8.4
+- Fix some code style
+- Use `\` for functions from global namespace
+- Replace PHPCS by php-cs-fixer
+- Move unit test to subdirectory `unit/`
+- Dev dependencies update
+- Update CI workflow
+- Update Makefile & Readme
 
 ## [2.0.0] - 2023-03-20
 [2.0.0]: https://github.com/eureka-framework/component-serializer/compare/1.0.0...2.0.0

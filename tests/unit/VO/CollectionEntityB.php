@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace Eureka\Component\Serializer\Tests\VO;
+namespace Eureka\Component\Serializer\Tests\Unit\VO;
 
 use Eureka\Component\Serializer\Exception\CollectionException;
 use Eureka\Component\Serializer\VO\AbstractCollection;

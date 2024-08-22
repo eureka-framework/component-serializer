@@ -16,6 +16,4 @@ namespace Eureka\Component\Serializer\Exception;
  *
  * @author Romain Cottard
  */
-class SerializerException extends \Exception
-{
-}
+class SerializerException extends \Exception {}

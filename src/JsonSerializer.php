@@ -34,7 +34,7 @@ final class JsonSerializer
             throw new SerializerException(
                 '[CLI-10200] Cannot serialize data (json_encode failed)!',
                 10200,
-                $exception
+                $exception,
             );
         }
     }
@@ -48,14 +48,14 @@ final class JsonSerializer
     {
         try {
             /** @var array<string, mixed> $data */
-            $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+            $data = \json_decode($json, true, 512, JSON_THROW_ON_ERROR);
 
             return $this->hydrate($class, $data, $skippableParameters);
         } catch (\JsonException $exception) {
             throw new SerializerException(
                 '[CLI-10201] Cannot unserialize data (json_decode failed)!',
                 10201,
-                $exception
+                $exception,
             );
         }
     }
@@ -73,7 +73,7 @@ final class JsonSerializer
             throw new SerializerException(
                 "[CLI-10202] Given class does not exists! (class: '$class')",
                 10202,
-                $exception
+                $exception,
             );
         }
 
@@ -82,7 +82,7 @@ final class JsonSerializer
         }
 
         $parameters   = $reflection->getConstructor()->getParameters();
-        $nbParameters = count($parameters);
+        $nbParameters = \count($parameters);
 
         $orderedArguments = [];
         foreach ($parameters as $parameter) {
@@ -96,14 +96,14 @@ final class JsonSerializer
             } elseif (!$skippableParameters) {
                 throw new SerializerException(
                     "[CLI-10203] Cannot deserialize object: data '$parameterName' does not exist!",
-                    10203
+                    10203,
                 );
             }
 
             $orderedArguments[$parameter->getPosition()] = $argumentValue;
         }
 
-        ksort($orderedArguments);
+        \ksort($orderedArguments);
 
         return new $class(...$orderedArguments);
     }
@@ -115,7 +115,7 @@ final class JsonSerializer
     private function getArgumentValueFromType(
         \ReflectionParameter $parameter,
         array $data,
-        bool $skippableParameters
+        bool $skippableParameters,
     ): mixed {
         $parameterName = $parameter->getName();
         $parameterType = $parameter->getType();
@@ -133,7 +133,7 @@ final class JsonSerializer
             throw new SerializerException(
                 "[CLI-10204] Given class does not exists! (class: '$parameterName')",
                 10204,
-                $exception
+                $exception,
             );
         }
 
@@ -162,9 +162,13 @@ final class JsonSerializer
             return false;
         }
 
+        /** @var \ReflectionNamedType[] $types */
         $types = $reflectionType instanceof \ReflectionUnionType ? $reflectionType->getTypes() : [$reflectionType];
 
-        return in_array('array', array_map(fn(\ReflectionNamedType $t): string => $t->getName(), $types));
+        return \in_array(
+            'array',
+            \array_map(fn(\ReflectionNamedType $t): string => $t->getName(), $types),
+        );
     }
 
     /**
@@ -176,8 +180,8 @@ final class JsonSerializer
     private function isHydratableArgument(\ReflectionClass $parameterReflectionClass, mixed $data): bool
     {
         return (
-            in_array(\JsonSerializable::class, $parameterReflectionClass->getInterfaceNames())
-            && is_array($data)
+            \in_array(\JsonSerializable::class, $parameterReflectionClass->getInterfaceNames())
+            && \is_array($data)
         );
     }
 }

@@ -9,10 +9,10 @@
 
 declare(strict_types=1);
 
-namespace Eureka\Component\Serializer\Tests;
+namespace Eureka\Component\Serializer\Tests\Unit;
 
-use Eureka\Component\Serializer\Tests\VO\CollectionEntityB;
-use Eureka\Component\Serializer\Tests\VO\EntityB;
+use Eureka\Component\Serializer\Tests\Unit\VO\CollectionEntityB;
+use Eureka\Component\Serializer\Tests\Unit\VO\EntityB;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -35,7 +35,7 @@ class CollectionTest extends TestCase
 
     public function testICanCountElementInCollection(): void
     {
-        $this->assertSame(3, count($this->getCollection()));
+        $this->assertCount(3, $this->getCollection());
     }
 
     public function testICanPerformIssetOnCollectionIndex(): void
@@ -86,7 +86,7 @@ class CollectionTest extends TestCase
                 ['id' => 1, 'name' => 'name B #1'],
                 ['id' => 2, 'name' => 'name B #2'],
                 ['id' => 3, 'name' => 'name B #3'],
-            ]
+            ],
         );
     }
 }

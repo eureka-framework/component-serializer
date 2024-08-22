@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace Eureka\Component\Serializer\Tests\VO;
+namespace Eureka\Component\Serializer\Tests\Unit\VO;
 
 use Eureka\Component\Serializer\JsonSerializableTrait;
 
@@ -33,7 +33,7 @@ class EntityB implements \JsonSerializable
      */
     public function __construct(
         int $id,
-        string $name
+        string $name,
     ) {
         $this->id   = $id;
         $this->name = $name;

@@ -1,6 +1,6 @@
 # component-serializer
 [![Current version](https://img.shields.io/packagist/v/eureka/component-serializer.svg?logo=composer)](https://packagist.org/packages/eureka/component-serializer)
-[![Supported PHP version](https://img.shields.io/static/v1?logo=php&label=PHP&message=8.1%20-%208.4&color=777bb4)](https://packagist.org/packages/eureka/component-serializer)
+[![Supported PHP version](https://img.shields.io/static/v1?logo=php&label=PHP&message=>%3D8.3&color=777bb4)](https://packagist.org/packages/eureka/component-serializer)
 ![CI](https://github.com/eureka-framework/component-serializer/workflows/CI/badge.svg)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=eureka-framework_component-serializer&metric=alert_status)](https://sonarcloud.io/dashboard?id=eureka-framework_component-serializer)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=eureka-framework_component-serializer&metric=coverage)](https://sonarcloud.io/dashboard?id=eureka-framework_component-serializer)

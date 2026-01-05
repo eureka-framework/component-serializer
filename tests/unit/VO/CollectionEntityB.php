@@ -21,11 +21,9 @@ use Eureka\Component\Serializer\VO\AbstractCollection;
  *
  * @extends AbstractCollection<EntityB>
  */
-class CollectionEntityB extends AbstractCollection
+class CollectionEntityB extends AbstractCollection implements \JsonSerializable
 {
     /**
-     * CollectionEntityB constructor.
-     *
      * @phpstan-param list<array{id: int, name: string}> $dataEntitiesB
      */
     public function __construct(array $dataEntitiesB)

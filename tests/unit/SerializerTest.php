@@ -16,6 +16,7 @@ use Eureka\Component\Serializer\JsonSerializer;
 use Eureka\Component\Serializer\Tests\Unit\VO\CollectionEntityB;
 use Eureka\Component\Serializer\Tests\Unit\VO\EntityA;
 use Eureka\Component\Serializer\Tests\Unit\VO\EntityB;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -29,9 +30,8 @@ class SerializerTest extends TestCase
      * @param \JsonSerializable $originalVO
      * @return void
      * @throws SerializerException
-     *
-     * @dataProvider provideVOForSerializationAndUnSerializationTests
      */
+    #[DataProvider('provideVOForSerializationAndUnserializationTests')]
     public function testICanSerializeAndDeserializeAValueObject(\JsonSerializable $originalVO): void
     {
         //~ Serializer / Unserializer service
@@ -40,11 +40,11 @@ class SerializerTest extends TestCase
         //~ Serialize VO
         $json = $serializer->serialize($originalVO);
 
-        //~ Unserialize
+        //~ Unserialize VO
         $unserializedVO = $serializer->unserialize($json, get_class($originalVO));
 
         //~ Compare data
-        $this->assertEquals($originalVO, $unserializedVO);
+        self::assertEquals($originalVO, $unserializedVO);
     }
 
     /**
@@ -57,7 +57,7 @@ class SerializerTest extends TestCase
         $data = ['id' => 1, 'name' => 'name A#1', 'other' => 'any value'];
 
         $this->expectException(SerializerException::class);
-        (new JsonSerializer())->unserialize(json_encode($data, JSON_THROW_ON_ERROR), EntityA::class);
+        (new JsonSerializer())->unserialize(\json_encode($data, flags: JSON_THROW_ON_ERROR), VO\EntityA::class);
     }
 
     /**
@@ -84,7 +84,7 @@ class SerializerTest extends TestCase
     public function testASerializerExceptionIsThrownWhenIUnserializeAnInvalidJson(): void
     {
         $this->expectException(SerializerException::class);
-        (new JsonSerializer())->unserialize('[', EntityA::class);
+        (new JsonSerializer())->unserialize('[', VO\EntityA::class);
     }
 
     /**
@@ -93,9 +93,9 @@ class SerializerTest extends TestCase
      */
     public function testASerializerExceptionIsThrownWhenIUnserializeDataAndTryToMapToANonExistingClass(): void
     {
+        $classString = \DateTimeImmutable::class;
         $this->expectException(SerializerException::class);
-
-        (new JsonSerializer())->unserialize('[]', 'Test\Hello\Not\Exists');
+        (new JsonSerializer())->unserialize('[]', $classString);
     }
 
     /**
@@ -112,9 +112,9 @@ class SerializerTest extends TestCase
         ];
 
         return [
-            'Entity A VO'                 => [new EntityA(42, 'name A', null)],
-            'Entity B VO'                 => [new EntityB(43, 'name B')],
-            'Entity A with Collection VO' => [new EntityA(42, 'name A', new CollectionEntityB($collection))],
+            'Entity A VO'                 => [new VO\EntityA(42, 'name A', null)],
+            'Entity B VO'                 => [new VO\EntityB(43, 'name B')],
+            'Entity A with Collection VO' => [new VO\EntityA(42, 'name A', new CollectionEntityB($collection))],
         ];
     }
 }

@@ -1,5 +1,10 @@
+includes:
+  - ./vendor/phpstan/phpstan-phpunit/extension.neon
+  - ./vendor/phpstan/phpstan-phpunit/rules.neon
+  - ./vendor/phpstan/phpstan-strict-rules/rules.neon
+
 parameters:
-  phpVersion: 80100 # PHP 8.1 - Current minimal version supported
+  phpVersion: 80300
   level: max
   paths:
     - ./src
@@ -8,10 +13,20 @@ parameters:
   bootstrapFiles:
     - ./vendor/autoload.php
 
+  treatPhpDocTypesAsCertain: false
+
   ignoreErrors:
-    - path:    './tests/unit/SerializerTest.php'
-      message: '`Parameter #2 \$class of method (.+)JsonSerializer::unserialize\(\) expects class-string, string given.`'
-    - path:    './src/JsonSerializer.php'
-      message: '`Method (.+)JsonSerializer::isHydratableArgument\(\) has parameter .+ with generic class ReflectionClass but does not specify its types: T`'
-    - path:    './src/JsonSerializer.php'
+    -
       message: '`Dead catch - ReflectionException is never thrown in the try block.`'
+      path:    './src/JsonSerializer.php'
+      count:   2
+
+    #~ Both bottom errors are due to contexts objects using `JsonSerializableTrait`. They are false positives.
+    -
+      identifier: function.impossibleType
+      path:       'src/JsonSerializableTrait.php'
+      count:      2
+    -
+      identifier: function.alreadyNarrowedType
+      path:       'src/JsonSerializableTrait.php'
+      count:      1

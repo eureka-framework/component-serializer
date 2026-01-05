@@ -18,7 +18,7 @@ use Eureka\Component\Serializer\Exception\SerializerException;
  *
  * @author Romain Cottard
  */
-interface JsonSerializerInterface extends \JsonSerializable
+interface JsonSerializerInterface
 {
     /**
      * @param \JsonSerializable $object
@@ -28,9 +28,10 @@ interface JsonSerializerInterface extends \JsonSerializable
     public function serialize(\JsonSerializable $object): string;
 
     /**
-     * @param string $json
-     * @return JsonSerializerInterface
+     * @template T of object
+     * @param class-string<T> $class
+     * @return T
      * @throws SerializerException
      */
-    public static function unserialize(string $json): JsonSerializerInterface;
+    public function unserialize(string $json, string $class, bool $skippableParameters = false): object;
 }

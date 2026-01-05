@@ -29,20 +29,20 @@ class CollectionTest extends TestCase
     {
         $collection = $this->getCollection();
         foreach ($collection as $index => $item) {
-            $this->assertSame($collection[$index]->getName(), $item->getName());
+            self::assertSame($collection[$index]->getName(), $item->getName());
         }
     }
 
     public function testICanCountElementInCollection(): void
     {
-        $this->assertCount(3, $this->getCollection());
+        self::assertCount(3, $this->getCollection());
     }
 
     public function testICanPerformIssetOnCollectionIndex(): void
     {
         $collection = $this->getCollection();
 
-        $this->assertTrue(isset($collection[1]));
+        self::assertTrue(isset($collection[1]));
     }
 
     public function testICanUnsetElementFromCollection(): void
@@ -50,15 +50,15 @@ class CollectionTest extends TestCase
         $collection = $this->getCollection();
 
         unset($collection[1]);
-        $this->assertFalse(isset($collection[1]));
+        self::assertFalse(isset($collection[1]));
     }
 
     public function testICanAddElementToTheEndOfTheCollection(): void
     {
         $collection   = $this->getCollection();
 
-        $collection[] = new EntityB(41, 'New Item #1');
-        $this->assertTrue(isset($collection[3]));
+        $collection[] = new EntityB(41, 'New Item #41');
+        self::assertTrue(isset($collection[3]));
     }
 
     public function testICanAddElementToTheCollectionAtTheSpecificIndexPosition(): void
@@ -66,16 +66,16 @@ class CollectionTest extends TestCase
         //~ Re-add item to the specific position
         $collection   = $this->getCollection();
 
-        $collection[5] = new EntityB(42, 'New Item #2');
-        $this->assertTrue(isset($collection[5]));
+        $collection[5] = new EntityB(42, 'New Item #42');
+        self::assertSame('New Item #42', $collection[5]->getName());
     }
 
     public function testICanOverrideAnElementInCollection(): void
     {
         $collection = $this->getCollection();
 
-        $collection[0] = new EntityB(43, 'New Item #3');
-        $this->assertSame('New Item #3', $collection[0]->getName());
+        $collection[0] = new EntityB(43, 'New Item #43');
+        self::assertSame('New Item #43', $collection[0]->getName());
     }
 
     public function getCollection(): CollectionEntityB

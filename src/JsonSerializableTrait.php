@@ -19,15 +19,21 @@ namespace Eureka\Component\Serializer;
 trait JsonSerializableTrait
 {
     /**
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
     public function jsonSerialize(): array
     {
         $data = [];
 
-        //~ Iterate over object properties or collection when objet is iterable
-        /** @var \Iterator|array<string, mixed> $this */
-        foreach ($this as $property => $value) {
+        if (\is_iterable($this)) {
+            //~ Iterate over collection when objet is iterable
+            $object = \iterator_to_array($this);
+        } else {
+            //~ Iterate over object properties when not iterable
+            $object = \get_object_vars($this);
+        }
+
+        foreach ($object as $property => $value) {
             $data[$property] = ($value instanceof \JsonSerializable) ? $value->jsonSerialize() : $value;
         }
 

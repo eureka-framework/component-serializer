@@ -17,6 +17,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ----
 
+## [3.0.0] - 2026-01-05
+[3.0.0]: https://github.com/eureka-framework/component-serializer/compare/2.1.0...3.0.0
+### Added
+- Add PHP 8.5 support
+### Removed
+- Drop PHP 8.1 & 8.2 support
+### Changed
+- Improve code & types
+- Fix phpstan errors
+- Fix code style
+- Update dev dependencies
+- Update CI configs
+
+----
+
 ## [2.1.0] - 2024-08-22
 [2.1.0]: https://github.com/eureka-framework/component-serializer/compare/2.0.0...2.1.0
 ### Changed

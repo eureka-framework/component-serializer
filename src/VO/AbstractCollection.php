@@ -47,7 +47,7 @@ class AbstractCollection implements \JsonSerializable, \ArrayAccess, \Iterator, 
     /**
      * Return number of item in collection.
      *
-     * @return int
+     * @return int<0,max>
      */
     public function count(): int
     {
@@ -187,6 +187,9 @@ class AbstractCollection implements \JsonSerializable, \ArrayAccess, \Iterator, 
      */
     private function getNewIndex(): int
     {
-        return (!empty($this->collection)) ? \array_keys($this->collection)[\count($this->collection) - 1] : 0;
+        return $this->collection !== []
+            ? \array_keys($this->collection)[\count($this->collection) - 1]
+            : 0
+        ;
     }
 }

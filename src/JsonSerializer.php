@@ -19,7 +19,7 @@ use Eureka\Component\Serializer\Exception\SerializerException;
  * Exception code range: 10000-10100
  * @author Romain Cottard
  */
-final class JsonSerializer
+final class JsonSerializer implements JsonSerializerInterface
 {
     /**
      * @param \JsonSerializable $object
@@ -29,7 +29,7 @@ final class JsonSerializer
     public function serialize(\JsonSerializable $object): string
     {
         try {
-            return json_encode($object, JSON_THROW_ON_ERROR);
+            return \json_encode($object, JSON_THROW_ON_ERROR);
         } catch (\JsonException $exception) {
             throw new SerializerException(
                 '[CLI-10200] Cannot serialize data (json_encode failed)!',
@@ -40,8 +40,9 @@ final class JsonSerializer
     }
 
     /**
-     * @phpstan-param class-string $class
-     * @phpstan-return object
+     * @template T of object
+     * @param class-string<T> $class
+     * @return T
      * @throws SerializerException
      */
     public function unserialize(string $json, string $class, bool $skippableParameters = false): object
@@ -61,8 +62,10 @@ final class JsonSerializer
     }
 
     /**
-     * @phpstan-param class-string $class
-     * @phpstan-param array<string, mixed> $data
+     * @template T of object
+     * @param class-string<T> $class
+     * @param array<string, mixed> $data
+     * @return T
      * @throws SerializerException
      */
     private function hydrate(string $class, array $data, bool $skippableParameters): object
@@ -78,7 +81,7 @@ final class JsonSerializer
         }
 
         if ($reflection->getConstructor() === null) {
-            return new $class();
+            return new $class(); // @codeCoverageIgnore
         }
 
         $parameters   = $reflection->getConstructor()->getParameters();
@@ -129,15 +132,16 @@ final class JsonSerializer
 
         try {
             $reflectionClass = new \ReflectionClass($parameterTypeName);
+            // @codeCoverageIgnoreStart
         } catch (\ReflectionException $exception) {
             throw new SerializerException(
                 "[CLI-10204] Given class does not exists! (class: '$parameterName')",
                 10204,
                 $exception,
             );
+            // @codeCoverageIgnoreEnd
         }
 
-        /** @var mixed $argumentValue */
         $argumentValue = $data[$parameterName];
         if ($this->isHydratableArgument($reflectionClass, $argumentValue)) {
             $argumentValue = $this->hydrate($reflectionClass->getName(), $argumentValue, $skippableParameters);
@@ -151,28 +155,30 @@ final class JsonSerializer
      */
     private function hasValidNamedData(string $parameterName, array $data): bool
     {
-        return array_key_exists($parameterName, $data);
+        return \array_key_exists($parameterName, $data);
     }
 
     private function hasValidArrayData(\ReflectionParameter $parameter, int $nbParameters): bool
     {
+        /** @var \ReflectionNamedType|\ReflectionUnionType|\ReflectionIntersectionType|null $reflectionType */
         $reflectionType = $parameter->getType();
 
         if ($reflectionType === null || $nbParameters !== 1) {
             return false;
         }
 
-        /** @var \ReflectionNamedType[] $types */
-        $types = $reflectionType instanceof \ReflectionUnionType ? $reflectionType->getTypes() : [$reflectionType];
-
-        return \in_array(
-            'array',
-            \array_map(fn(\ReflectionNamedType $t): string => $t->getName(), $types),
+        $types     = $reflectionType instanceof \ReflectionNamedType ? [$reflectionType] : $reflectionType->getTypes();
+        $typeHints = \array_map(
+            fn(\ReflectionType $t): string => $t instanceof \ReflectionNamedType ? $t->getName() : (string) $t,
+            $types,
         );
+
+        return \in_array('array', $typeHints, true);
     }
 
     /**
-     * @param \ReflectionClass $parameterReflectionClass
+     * @template T of object
+     * @param \ReflectionClass<T> $parameterReflectionClass
      * @param mixed|array<string,mixed> $data
      * @return bool
      * @phpstan-assert-if-true array<string, mixed> $data
@@ -180,7 +186,7 @@ final class JsonSerializer
     private function isHydratableArgument(\ReflectionClass $parameterReflectionClass, mixed $data): bool
     {
         return (
-            \in_array(\JsonSerializable::class, $parameterReflectionClass->getInterfaceNames())
+            \in_array(\JsonSerializable::class, $parameterReflectionClass->getInterfaceNames(), true)
             && \is_array($data)
         );
     }
